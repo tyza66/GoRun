@@ -1,2 +1,9 @@
 protoc --go_out=. hello.proto
 protoc --go-grpc_out=. hello.proto
+
+openssl genrsa -out server.key 2048 生成私钥
+openssl req -new -x509 -key server.key -out server.crt -days 36500 生成crt文件
+openssl req -new -key server.key -out server.csr 生成csr文件
+openssl genpkey -algorithm RSA -out test.key 生成私钥证书
+openssl req -new -nodes -key test.key -out test.csr -days 3650 -subj "/C=cn/OU-myorg/0=mycomp/CN=myname" -config ./openssl.cnf -extensions v3_req 通过私钥获得证书请求文件test.csr
+openssl x509 -req -days 365 -in test.csr -out test.pem -CA server.crt -CAkey server.key -CAcreateserial -extfile ./openssl.cnf -extensions v3_ereq 生成SAN证书 pem结尾的
