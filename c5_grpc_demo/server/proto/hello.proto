@@ -2,7 +2,7 @@
 syntax = "proto3";
 
 //第一个参数是生产的go文件在哪个位置 service是生成的go文件的包名
-option go_package = ".;service";
+option go_package = "./;service";
 
 //服务中定义被调用方法
 service SayHello{
