@@ -1,8 +1,9 @@
 package main
 
 import (
-	pb "GoRun/c5_grpc_demo/server/proto/"
+	pb "GoRun/c5_grpc_demo/server/proto"
 	"context"
+	"fmt"
 	"google.golang.org/grpc"
 	"net"
 )
@@ -16,14 +17,23 @@ import (
 type server struct {
 	pb.UnimplementedSayHelloServer
 }
-//重写这个方法 实现服务端被调用的方法
+
+// 重写这个方法 实现服务端被调用的方法
 func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
 	return &pb.HelloResponse{ResponseMsg: "hello," + req.RequestName}, nil
 }
 
 func main() {
 	//开启端口
-	listen,_ := net.Listen("tcp","9090")
+	listen, _ := net.Listen("tcp", ":9090")
 	//创建grpc服务
 	grpcServer := grpc.NewServer()
+	//在grpc客户端注册我们自己写的服务
+	pb.RegisterSayHelloServer(grpcServer, &server{})
+	//启动服务
+	err := grpcServer.Serve(listen)
+	if err != nil {
+		fmt.Printf("failed to serve: %v", err)
+		return
+	}
 }
