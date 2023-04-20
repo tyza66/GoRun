@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		fmt.Println("数据库连接失败")
 	}
+	//这个结构体用于和数据库中的表同步 修改这个表也会变
 	type User struct {
 		Id      int64
 		Name    string
@@ -36,9 +37,34 @@ func main() {
 		Created time.Time `xorm:"created"`
 		Updated time.Time `xorm:"updated"`
 	}
-
+	//同步数据库中的表
 	err = engine.Sync(new(User))
 	if err != nil {
 		fmt.Println("同步表结构失败")
 	}
+
+	//插入使用insert 可以同时插入多个数据
+	user := User{Id: 10001, Name: "giao", Age: 18}
+	//第一个返回值是影响的行数 这里我们一般使用的是指针的参数
+	insert, err := engine.Insert(&user)
+	if err != nil {
+		fmt.Println("插入失败")
+	}
+	fmt.Println(insert)
+	//一次提交多个
+	user1 := User{Id: 10003, Name: "sdm", Age: 18}
+	user2 := User{Id: 10004, Name: "ll", Age: 18}
+	insert,_ = engine.Insert(user1, user2)
+	if insert>=1 {
+		fmt.Println("插入成功")
+	}
+
+	//使用切片提交
+	var users []User
+	users = append(users, User{Id: 10005, Name: "sdm2", Age: 18})
+	users = append(users, User{Id: 10006, Name: "sdm3", Age: 18})
+	n,_ = engine.Insert(users)
+	if n>=1 {
+        fmt.Println("插入成功")
+    }
 }
