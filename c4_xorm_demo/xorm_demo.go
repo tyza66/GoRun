@@ -124,4 +124,26 @@ func main() {
 	}
 
 	//事务
+	session := engine.NewSession()
+	session.Begin()
+	defer func() {
+		err := recover()
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("回滚了")
+			session.Rollback()
+		} else {
+			session.Commit()
+		}
+	}()
+	user10 := User{Id: 10005, Name: "giaogiao", Age: 18, Passwd: "666"}
+	if _, err := session.Insert(&user10); err!=nil {
+		panic(err)
+	}
+
+	user11 := User{Name: "ll",Age: 18}
+	if _,err = session.Where("id=10001").Update(&user11); err!=nil {
+		panic(err)
+	}
+
 }
