@@ -12,6 +12,7 @@ service SayHello{
 //定义方法中使用的变量类型（结构体）
 message HelloRequest{
   string requestName = 1;  //;就是消息标识号
+  //repeated string name = 2; 这样在go中会被定义为切片
 }
 
 message HelloResponse{
