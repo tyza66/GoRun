@@ -54,8 +54,8 @@ func main() {
 	//一次提交多个
 	user1 := User{Id: 10003, Name: "sdm", Age: 18}
 	user2 := User{Id: 10004, Name: "ll", Age: 18}
-	insert,_ = engine.Insert(user1, user2)
-	if insert>=1 {
+	insert, _ = engine.Insert(&user1, &user2)
+	if insert >= 1 {
 		fmt.Println("插入成功")
 	}
 
@@ -63,8 +63,15 @@ func main() {
 	var users []User
 	users = append(users, User{Id: 10005, Name: "sdm2", Age: 18})
 	users = append(users, User{Id: 10006, Name: "sdm3", Age: 18})
-	n,_ = engine.Insert(users)
-	if n>=1 {
-        fmt.Println("插入成功")
-    }
+	n, _ := engine.Insert(&users)
+	if n >= 1 {
+		fmt.Println("插入成功")
+	}
+
+	//删除和修改 还有sql语句的执行exec
+	user4 := User{Name: "孙小明"}
+	n, _ = engine.ID(10006).Update(&user4)
+	if n >= 1 {
+		fmt.Println("修改成功")
+	}
 }
