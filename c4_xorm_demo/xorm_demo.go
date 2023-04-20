@@ -84,7 +84,44 @@ func main() {
 	engine.Exec("delete from user where id = ?", 10006)
 
 	//查询
-	result,_ := engine.Query("select * from user")
+	result, _ := engine.Query("select * from user")
 	fmt.Println(result)
+	//条件查询
+	user = User{}
+	//使用get的方式只会查出来一条数据
+	engine.Get(&user)
+	fmt.Println(user)
+	//条件查询
+	user5 := User{Name: "sdm"}
+	engine.Where("name=?", user5.Name).Desc("id").Get(&user5)
+	fmt.Println(user5)
+	var name string
+	engine.Table(&user).Where("id = 10004").Cols("name").Get(&name)
+	fmt.Println(name)
 
+	//查询多条数据
+	var users4 []User
+	engine.Where("id =?", 10004).And("age=18").Find(&users4)
+	fmt.Println(users4)
+
+	//count获取记录数
+	user99 := User{}
+	counts, _ := engine.Count(&user99)
+	fmt.Println(counts)
+	engine.Iterate(&User{Name: "ll"}, func(idx int, bean interface{}) error {
+		user := bean.(*User)
+		fmt.Println(user)
+		return nil
+	})
+
+	//获得多行记录
+	rows, err := engine.Rows(&User{Name: "ll"})
+	defer rows.Close()
+	userBean := new(User)
+	for rows.Next() {
+		rows.Scan(userBean)
+		fmt.Println(userBean)
+	}
+
+	//事务
 }
