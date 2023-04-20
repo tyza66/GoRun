@@ -215,3 +215,5 @@ exit
 先输入exit退出mysql，再输入exit退出容器。
 
 此时，我们通过客户端工具就可以连接mysql了。
+
+docker run -p 3306:3306 --name mysql --restart=always --privileged=true   -e MYSQL_ROOT_PASSWORD=123456 -d mysql:latest
