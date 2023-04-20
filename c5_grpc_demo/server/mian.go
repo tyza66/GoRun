@@ -3,8 +3,10 @@ package main
 import (
 	pb "GoRun/c5_grpc_demo/server/proto"
 	"context"
+	"errors"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"net"
 )
 
@@ -18,8 +20,27 @@ type server struct {
 	pb.UnimplementedSayHelloServer
 }
 
-// 重写这个方法 实现服务端被调用的方法
+// 重写这个方法 实现服务端被调用的方法 业务逻辑
 func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+	//获取元数据的信息
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, errors.New("未传输token")
+	}
+	var appId string
+	var appKey string
+	if v, ok := md["appid"]; ok {
+		appId = v[0]
+	}
+	if v, ok := md["appkey"]; ok {
+		appKey = v[0]
+	}
+	//验证token
+	fmt.Println(appId, appKey)
+	if appId != "giao" || appKey != "giao" {
+		return nil,errors.New("token不一致")
+	}
+
 	return &pb.HelloResponse{ResponseMsg: "hello," + req.RequestName}, nil
 }
 
