@@ -69,9 +69,22 @@ func main() {
 	}
 
 	//删除和修改 还有sql语句的执行exec
-	user4 := User{Name: "孙小明"}
+	user4 := User{Name: "孙小明1"}
 	n, _ = engine.ID(10006).Update(&user4)
 	if n >= 1 {
 		fmt.Println("修改成功")
 	}
+	user = User{Name: "sdm2"}
+	engine.ID(10005).Delete(&user)
+	if n >= 1 {
+		fmt.Println("删除成功")
+	}
+
+	//执行sql语句
+	engine.Exec("delete from user where id = ?", 10006)
+
+	//查询
+	result,_ := engine.Query("select * from user")
+	fmt.Println(result)
+
 }
