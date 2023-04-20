@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
 )
@@ -34,6 +35,11 @@ func (c *ClientTokenAuth) RequireTransportSecurity() bool {
 }
 
 func main() {
+	//ssl加密部分开始 客户端只需要传pem文件即可 证书文件  第二个参数是域
+	creds,_ := credentials.NewClientTLSFromFile("D:\\Project\\GoRun\\c5_grpc_demo\\key\\test.pem","*.tyza66.com")
+
+	//ssl加密部分结束
+
 	var opts []grpc.DialOption
 	//拼接一个基础的
 	opts =append(opts,grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -41,7 +47,10 @@ func main() {
 	opts = append(opts,grpc.WithPerRPCCredentials(new(ClientTokenAuth)))
 	//grpc连接到server端，此处禁用安全传输，没有加密和验证
 	//conn, err := grpc.Dial("127.0.0.1:9090", grpc.WithTransportCredentials(insecure.NewCredentials()))
-	conn, err := grpc.Dial("127.0.0.1:9090", opts...)
+	//使用token加密的
+	//conn, err := grpc.Dial("127.0.0.1:9090", opts...)
+	//使用ssl加密的
+	conn, err := grpc.Dial("127.0.0.1:9090", grpc.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

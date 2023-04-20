@@ -3,10 +3,9 @@ package main
 import (
 	pb "GoRun/c5_grpc_demo/server/proto"
 	"context"
-	"errors"
 	"fmt"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/credentials"
 	"net"
 )
 
@@ -22,7 +21,7 @@ type server struct {
 
 // 重写这个方法 实现服务端被调用的方法 业务逻辑
 func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
-	//获取元数据的信息
+	/*//获取元数据的信息
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errors.New("未传输token")
@@ -40,15 +39,21 @@ func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloR
 	if appId != "giao" || appKey != "giao" {
 		return nil,errors.New("token不一致")
 	}
-
+*/
 	return &pb.HelloResponse{ResponseMsg: "hello," + req.RequestName}, nil
 }
 
 func main() {
+	//ssl加密部分开始 只要把证书签名文件和私钥文件放进去就行了
+	creds,_ := credentials.NewServerTLSFromFile("D:\\Project\\GoRun\\c5_grpc_demo\\key\\test.pem","D:\\Project\\GoRun\\c5_grpc_demo\\key\\test.key")
+	//ssl加密部分结束
+
 	//开启端口
 	listen, _ := net.Listen("tcp", ":9090")
 	//创建grpc服务
-	grpcServer := grpc.NewServer()
+	//grpcServer := grpc.NewServer()
+	//使用ssl验证的grpc服务
+	grpcServer := grpc.NewServer(grpc.Creds(creds))
 	//在grpc客户端注册我们自己写的服务
 	pb.RegisterSayHelloServer(grpcServer, &server{})
 	//启动服务
